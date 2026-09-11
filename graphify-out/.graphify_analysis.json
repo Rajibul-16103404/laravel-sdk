@@ -26,6 +26,7 @@
       "src_omnicastservice_omnicastservice_getroomuptime",
       "src_omnicastservice_omnicastservice_getturncredentials",
       "src_omnicastservice_omnicastservice_getwebsocketurl",
+      "src_omnicastservice_omnicastservice_handlewebhook",
       "src_omnicastservice_omnicastservice_healthcheck",
       "src_omnicastservice_omnicastservice_isdraining",
       "src_omnicastservice_omnicastservice_ishealthy",
@@ -36,7 +37,8 @@
       "src_omnicastservice_omnicastservice_sendgetrequest",
       "src_omnicastservice_omnicastservice_sendgift",
       "src_omnicastservice_omnicastservice_sendpostrequest",
-      "src_omnicastservice_omnicastservice_validateconfig"
+      "src_omnicastservice_omnicastservice_validateconfig",
+      "src_omnicastservice_omnicastservice_verifywebhooksignature"
     ],
     "1": [
       "tests_omnicastservicetest_omnicastservicetest",
@@ -75,6 +77,40 @@
       "tests_omnicastservicetest_omnicastservicetest_test_verifies_webhook_signature_and_handles_event"
     ],
     "2": [
+      "composer",
+      "composer_authors",
+      "composer_autoload",
+      "composer_autoload_dev",
+      "composer_autoload_dev_psr_4",
+      "composer_autoload_psr_4",
+      "composer_config",
+      "composer_config_optimize_autoloader",
+      "composer_config_sort_packages",
+      "composer_description",
+      "composer_homepage",
+      "composer_license",
+      "composer_minimum_stability",
+      "composer_name",
+      "composer_prefer_stable",
+      "composer_psr_4_omnicast_laravelsdk",
+      "composer_psr_4_omnicast_laravelsdk_tests",
+      "composer_require",
+      "composer_require_dev",
+      "composer_require_dev_laravel_pint",
+      "composer_require_dev_mockery_mockery",
+      "composer_require_dev_orchestra_testbench",
+      "composer_require_dev_phpstan_phpstan",
+      "composer_require_dev_phpunit_phpunit",
+      "composer_require_firebase_php_jwt",
+      "composer_require_illuminate_http",
+      "composer_require_illuminate_support",
+      "composer_require_php",
+      "composer_support",
+      "composer_support_issues",
+      "composer_support_source",
+      "composer_type"
+    ],
+    "3": [
       "runtimeexception",
       "src_exceptions_omnicastexception",
       "src_exceptions_omnicastexception_omnicastexception",
@@ -100,7 +136,7 @@
       "src_exceptions_omnicastexception_php_self",
       "throwable"
     ],
-    "3": [
+    "4": [
       "illuminate_http_client_pendingrequest",
       "illuminate_support_facades_facade",
       "orchestra_testbench_testcase",
@@ -120,36 +156,26 @@
       "src_facades_omnicast_omnicast",
       "src_facades_omnicast_omnicast_getfacadeaccessor",
       "src_omnicastservice",
-      "src_omnicastservice_omnicastservice_handlewebhook",
       "src_omnicastservice_omnicastservice_httpclient",
-      "src_omnicastservice_omnicastservice_verifywebhooksignature",
       "tests_omnicastservicetest"
     ],
-    "4": [
-      "composer",
-      "composer_authors",
-      "composer_autoload",
-      "composer_autoload_dev",
-      "composer_autoload_dev_psr_4",
-      "composer_autoload_psr_4",
-      "composer_config",
-      "composer_config_optimize_autoloader",
-      "composer_config_sort_packages",
-      "composer_description",
-      "composer_license",
-      "composer_minimum_stability",
-      "composer_name",
-      "composer_prefer_stable",
-      "composer_psr_4_omnicast_laravelsdk",
-      "composer_psr_4_omnicast_laravelsdk_tests",
-      "composer_require",
-      "composer_require_firebase_php_jwt",
-      "composer_require_illuminate_http",
-      "composer_require_illuminate_support",
-      "composer_require_php",
-      "composer_type"
-    ],
     "5": [
+      "composer_keywords",
+      "ref_jwt",
+      "ref_laravel",
+      "ref_live_streaming",
+      "ref_media_server",
+      "ref_omnicast",
+      "ref_realtime",
+      "ref_sdk",
+      "ref_sfu",
+      "ref_streaming",
+      "ref_stun",
+      "ref_turn",
+      "ref_webhooks",
+      "ref_webrtc"
+    ],
+    "6": [
       "package",
       "package_author",
       "package_description",
@@ -164,16 +190,6 @@
       "package_scripts_build",
       "package_version"
     ],
-    "6": [
-      "composer_json_ref_laravel",
-      "composer_json_ref_omnicast",
-      "composer_json_ref_webrtc",
-      "composer_keywords",
-      "ref_jwt",
-      "ref_media_server",
-      "ref_sdk",
-      "ref_streaming"
-    ],
     "7": [
       "composer_aliases_omnicast",
       "composer_extra",
@@ -183,14 +199,6 @@
       "ref_omnicast_laravelsdk_omnicastserviceprovider"
     ],
     "8": [
-      "composer_require_dev",
-      "composer_require_dev_laravel_pint",
-      "composer_require_dev_mockery_mockery",
-      "composer_require_dev_orchestra_testbench",
-      "composer_require_dev_phpstan_phpstan",
-      "composer_require_dev_phpunit_phpunit"
-    ],
-    "9": [
       "illuminate_support_serviceprovider",
       "src_omnicastserviceprovider",
       "src_omnicastserviceprovider_omnicastserviceprovider",
@@ -198,41 +206,40 @@
       "src_omnicastserviceprovider_omnicastserviceprovider_provides",
       "src_omnicastserviceprovider_omnicastserviceprovider_register"
     ],
-    "10": [
+    "9": [
       "src_constants_webhooktype",
       "src_constants_webhooktype_webhooktype",
       "src_constants_webhooktype_webhooktype_all"
     ],
-    "11": [
+    "10": [
       "src_constants_wsevent",
       "src_constants_wsevent_wsevent"
     ],
-    "12": [
+    "11": [
       "config_omnicast"
     ],
-    "13": [
+    "12": [
       "pendingrequest"
     ],
-    "14": [
+    "13": [
       "static"
     ]
   },
   "cohesion": {
-    "0": 0.10317460317460317,
+    "0": 0.09672830725462304,
     "1": 0.058823529411764705,
-    "2": 0.14130434782608695,
-    "3": 0.10276679841897234,
-    "4": 0.09090909090909091,
-    "5": 0.15384615384615385,
-    "6": 0.25,
+    "2": 0.0625,
+    "3": 0.14130434782608695,
+    "4": 0.11428571428571428,
+    "5": 0.14285714285714285,
+    "6": 0.15384615384615385,
     "7": 0.3333333333333333,
-    "8": 0.3333333333333333,
-    "9": 0.4,
-    "10": 0.6666666666666666,
+    "8": 0.4,
+    "9": 0.6666666666666666,
+    "10": 1.0,
     "11": 1.0,
     "12": 1.0,
-    "13": 1.0,
-    "14": 1.0
+    "13": 1.0
   },
   "gods": [
     {
@@ -251,14 +258,14 @@
       "degree": 29
     },
     {
+      "id": "composer_keywords",
+      "label": "keywords",
+      "degree": 14
+    },
+    {
       "id": "src_dtos_webhookevent_webhookevent",
       "label": "WebhookEvent",
       "degree": 9
-    },
-    {
-      "id": "composer_keywords",
-      "label": "keywords",
-      "degree": 8
     },
     {
       "id": "composer_require_dev",
@@ -266,13 +273,13 @@
       "degree": 6
     },
     {
-      "id": "composer_require",
-      "label": "require",
+      "id": "src_omnicastserviceprovider_omnicastserviceprovider",
+      "label": "OmnicastServiceProvider",
       "degree": 5
     },
     {
-      "id": "src_omnicastserviceprovider_omnicastserviceprovider",
-      "label": "OmnicastServiceProvider",
+      "id": "composer_require",
+      "label": "require",
       "degree": 5
     },
     {
@@ -281,8 +288,8 @@
       "degree": 4
     },
     {
-      "id": "composer_extra_laravel",
-      "label": "laravel",
+      "id": "src_facades_omnicast_omnicast",
+      "label": "Omnicast",
       "degree": 3
     }
   ],
@@ -296,7 +303,7 @@
       ],
       "confidence": "EXTRACTED",
       "relation": "inherits",
-      "note": "Bridges community 3 \u2192 community 1"
+      "note": "Bridges community 4 \u2192 community 1"
     }
   ],
   "tokens": {
