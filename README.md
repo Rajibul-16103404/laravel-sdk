@@ -1,59 +1,119 @@
 # OmniCast Media Server — Laravel SDK
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/omnicast/laravel-sdk.svg?style=flat-square)](https://packagist.org/packages/omnicast/laravel-sdk)
-[![Total Downloads](https://img.shields.io/packagist/dt/omnicast/laravel-sdk.svg?style=flat-square)](https://packagist.org/packages/omnicast/laravel-sdk)
-[![PHP Version](https://img.shields.io/badge/PHP-8.1%2B-blue.svg?style=flat-square)](https://php.net)
-[![License](https://img.shields.io/packagist/l/omnicast/laravel-sdk.svg?style=flat-square)](LICENSE)
+[![Latest Version](https://img.shields.io/badge/version-1.1.0-blue.svg?style=flat-square)](https://github.com/Rajibul-16103404/laravel-sdk/releases)
+[![Software License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
+[![PHP Version](https://img.shields.io/badge/PHP-8.1%2B-8892BF.svg?style=flat-square)](https://php.net)
+[![Laravel Support](https://img.shields.io/badge/Laravel-10%20%7C%2011%20%7C%2012-FF2D20.svg?style=flat-square)](https://laravel.com)
+[![Static Analysis](https://img.shields.io/badge/PHPStan-Level%208-brightgreen.svg?style=flat-square)](https://phpstan.org)
 
-A production-ready, feature-complete Laravel SDK and service wrapper for the **OmniCast Go live streaming media server** (WebRTC SFU + HTTP REST + WebSocket signaling + Webhooks).
+A production-ready, feature-complete Laravel SDK and service wrapper for the **OmniCast Go WebRTC Live Streaming Media Server**.
+
+This package makes it effortless to manage WebRTC rooms, generate signed JWT user tokens with ICE credentials, inject real-time virtual gifts, monitor server health, verify incoming webhooks, and interact with the WebSocket signaling protocol.
+
+---
+
+## Table of Contents
+
+- [Architecture Overview](#architecture-overview)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [End-to-End Implementation Guide](#end-to-end-implementation-guide)
+  - [1. Stream Controller (Host, Viewer, Gifts, End Room)](#1-stream-controller-host-viewer-gifts-end-room)
+  - [2. Webhook Event Listener (Receiving Server Events)](#2-webhook-event-listener-receiving-server-events)
+  - [3. Frontend Client Integration (WebSockets + WebRTC)](#3-frontend-client-integration-websockets--webrtc)
+- [Complete API Reference](#complete-api-reference)
+  - [Authentication & Tokens](#authentication--tokens)
+  - [Room Management](#room-management)
+  - [STUN / TURN ICE Servers](#stun--turn-ice-servers)
+  - [Admin Operations](#admin-operations)
+  - [Gift / Engagement API](#gift--engagement-api)
+  - [Health & Maintenance](#health--maintenance)
+  - [WebSocket Signaling Helpers](#websocket-signaling-helpers)
+  - [Webhooks & Signature Verification](#webhooks--signature-verification)
+- [Exception & Error Handling](#exception--error-handling)
+- [Postman Collection](#postman-collection)
+- [Testing & Quality Assurance](#testing--quality-assurance)
+- [License](#license)
+
+---
+
+## Architecture Overview
+
+```
+ ┌──────────────────────┐          REST (Auth / Token / Rooms)        ┌─────────────────────────┐
+ │                      │ ──────────────────────────────────────────> │                         │
+ │   Laravel Backend    │                                             │   OmniCast Media Server │
+ │    (This SDK)        │ <────────────────────────────────────────── │        (Go SFU)         │
+ │                      │           Webhook Events (HMAC-SHA256)      │                         │
+ └──────────────────────┘                                             └─────────────────────────┘
+            │                                                                      ▲
+            │ Token, ICE Credentials & ws_url                                      │ WebRTC Media Tracks
+            ▼                                                                      │ (Video / Audio) +
+ ┌──────────────────────┐          WebSocket Signaling (ws://.../ws?token=)        │ SDP Offer/Answer
+ │                      │ ─────────────────────────────────────────────────────────┘
+ │   Frontend Client    │
+ │ (Web, iOS, Android)  │
+ └──────────────────────┘
+```
 
 ---
 
 ## Features
 
-- **Authentication & Token Generation**: Primary `POST /api/auth/token` with ICE servers, LiveKit-compatible `POST /api/livekit/token`, and offline zero-latency JWT creation.
-- **Room Management**: `createRoom`, `listRooms`, `getRoom`, `getRoomCount`, `getParticipants`, `getParticipantCount`.
-- **STUN / TURN ICE Servers**: Fetch time-limited HMAC-SHA1 credentials or generate them locally (RFC 5766 TURN REST API).
-- **Admin Endpoints**: `adminListRooms` with live uptime metrics, `forceEndRoom` / `closeRoom`.
-- **Gift / In-App Engagement**: Inject virtual gifts into live rooms via `POST /api/gift` for real-time WebSocket broadcast.
-- **Health Checks**: Inspect server health and draining state before routing users.
-- **WebSocket Signaling Helpers**: URL generator (`ws://` / `wss://`), action & event constants, standard message envelope formatter.
-- **Webhook Verification & Event Handling**: Secure HMAC-SHA256 signature verification and structured `WebhookEvent` DTO.
-- **Developer-Friendly**: Full Laravel facade support with autocomplete `@method` annotations, strict typing, PHPStan Level 8 clean, and Pint styled.
+- **Primary Token Generation**: Calls `POST /api/auth/token` on the media server and receives JWT + ready-to-use ICE servers (STUN/TURN).
+- **LiveKit Compatible**: Supports LiveKit token endpoint (`POST /api/livekit/token`).
+- **Zero-Latency Offline JWT Signing**: Fallback local token generator (`generateHostToken`, `generateJoinToken`, `generateLocalToken`) signed with HMAC-SHA256.
+- **Room Lifecycle Management**: Create live rooms before streams start, list active rooms, fetch viewer statistics, and compute uptime.
+- **STUN & TURN Support**: Fetch time-limited credentials or generate RFC 5766 HMAC-SHA1 TURN credentials offline without network overhead.
+- **Admin Control**: View active rooms with duration and metrics, or forcefully end rooms to disconnect all participants.
+- **Virtual Gift API**: Send gifts into rooms via REST; server broadcasts gift animations in real time across WebSockets.
+- **Health & Draining Status**: Proactively detect graceful server draining (`503`) to redirect traffic during maintenance.
+- **Signaling Helpers & Constants**: Action and event constants (`WsAction`, `WsEvent`, `Role`), WebSocket URL builder (`ws://` / `wss://`), and message envelope formatter.
+- **HMAC-SHA256 Webhooks**: Secure incoming webhook signature verification with typed [`WebhookEvent`](src/DTOs/WebhookEvent.php) DTO.
+- **Clean Architecture**: 100% test coverage (PHPUnit 11), PHPStan Level 8 clean, Laravel Pint styled, and full IDE Facade autocompletion.
 
 ---
 
 ## Requirements
 
-- PHP `^8.1`
-- Laravel `^10.0 | ^11.0 | ^12.0`
+- **PHP**: `^8.1`
+- **Laravel Framework**: `^10.0`, `^11.0`, or `^12.0`
 
 ---
 
 ## Installation
 
+Install the package via Composer:
+
 ```bash
-composer require omnicast/laravel-sdk
+composer require rajibul-16103404/omnicast-laravel-sdk
 ```
 
-The service provider and facade are auto-discovered by Laravel.
+The package automatically registers its Service Provider (`OmnicastServiceProvider`) and Facade (`Omnicast`) via Laravel Package Discovery.
 
 ---
 
 ## Configuration
 
-Publish the configuration file:
+Publish the package configuration file to your project:
 
 ```bash
 php artisan vendor:publish --tag=omnicast-config
 ```
 
-Add the following environment variables to your `.env` file:
+This creates `config/omnicast.php`. Now add the corresponding environment variables to your `.env` file:
 
 ```env
+# Base URL of your OmniCast Go Media Server
 OMNICAST_BASE_URL=http://127.0.0.1:8080
+
+# API Credentials for protected REST endpoints
 OMNICAST_API_KEY=dev_api_key_123
 OMNICAST_API_SECRET=dev_api_secret_456
+
+# JWT secret shared with the Go server
 OMNICAST_JWT_SECRET=live_media_server_jwt_secret_key_2026
 
 # STUN / TURN credentials (RFC 5766)
@@ -61,91 +121,393 @@ OMNICAST_TURN_SECRET=my_super_secure_turn_secret_999
 OMNICAST_TURN_REALM=omnicast.live
 OMNICAST_TURN_PORT=3478
 
-# Webhook signature verification
-OMNICAST_WEBHOOK_SECRET=your_webhook_secret_for_verification
+# Webhook verification secret
+OMNICAST_WEBHOOK_SECRET=your_webhook_secret_here
 
-# Optional settings
+# Request timeout and token TTL
 OMNICAST_TIMEOUT=30
 OMNICAST_JWT_TTL=86400
 ```
 
 ---
 
-## Quick Start & Usage
+## End-to-End Implementation Guide
 
-### 1. Generating User Token & ICE Servers (Primary Flow)
+Here is a complete, real-world example showing how to build a live streaming API in Laravel.
 
-Before a host or viewer connects to the media server, request a signed JWT token and ICE server configuration:
+### 1. Stream Controller (Host, Viewer, Gifts, End Room)
+
+Create `app/Http/Controllers/StreamController.php`:
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Omnicast\LaravelSdk\Facades\Omnicast;
+use Omnicast\LaravelSdk\Constants\Role;
+use Omnicast\LaravelSdk\Exceptions\OmnicastException;
+
+class StreamController extends Controller
+{
+    /**
+     * 1. Host starts a live stream
+     * POST /api/stream/start
+     */
+    public function startLive(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $roomId = 'room_' . uniqid();
+
+        try {
+            // Step 1: Create room on media server
+            $room = Omnicast::createRoom(
+                roomId: $roomId,
+                hostId: (string) $user->id,
+                roomName: $request->input('title', "{$user->name}'s Live"),
+                roomType: 'live'
+            );
+
+            // Step 2: Generate token with host permissions and ICE servers
+            $authData = Omnicast::generateToken(
+                userId: (string) $user->id,
+                userName: $user->name,
+                avatarUrl: $user->avatar_url ?? '',
+                role: Role::HOST,
+                roomId: $roomId,
+                canPublish: true,
+                canSubscribe: true
+            );
+
+            // Step 3: Generate WebSocket signaling URL
+            $wsUrl = Omnicast::getWebSocketUrl($authData['token']);
+
+            return response()->json([
+                'success'     => true,
+                'room_id'     => $roomId,
+                'token'       => $authData['token'],
+                'ice_servers' => $authData['ice_servers'],
+                'ws_url'      => $wsUrl,
+            ]);
+        } catch (OmnicastException $e) {
+            if ($e->isDraining()) {
+                return response()->json(['error' => 'Server is currently undergoing maintenance.'], 503);
+            }
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * 2. Viewer joins a live stream
+     * POST /api/stream/join
+     */
+    public function joinLive(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $roomId = $request->input('room_id');
+
+        try {
+            // Generate viewer token (canPublish: false)
+            $authData = Omnicast::generateToken(
+                userId: (string) $user->id,
+                userName: $user->name,
+                avatarUrl: $user->avatar_url ?? '',
+                role: Role::VIEWER,
+                roomId: $roomId,
+                canPublish: false,
+                canSubscribe: true
+            );
+
+            $wsUrl = Omnicast::getWebSocketUrl($authData['token']);
+
+            return response()->json([
+                'success'     => true,
+                'token'       => $authData['token'],
+                'ice_servers' => $authData['ice_servers'],
+                'ws_url'      => $wsUrl,
+            ]);
+        } catch (OmnicastException $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * 3. Send a virtual gift to the host
+     * POST /api/stream/gift
+     */
+    public function sendGift(Request $request): JsonResponse
+    {
+        $sender = $request->user();
+        $roomId = $request->input('room_id');
+        $receiverId = $request->input('host_id');
+        $coins = (int) $request->input('coins', 50);
+
+        // Deduct coins from user balance in your database here...
+
+        // Broadcast gift into the live room in real time
+        $res = Omnicast::sendGift(
+            roomId: $roomId,
+            senderId: (string) $sender->id,
+            senderName: $sender->name,
+            giftId: $request->input('gift_id', 'rose_01'),
+            giftName: $request->input('gift_name', 'Rose'),
+            receiverId: $receiverId,
+            coins: $coins,
+            points: $coins,
+            amount: 1
+        );
+
+        return response()->json($res);
+    }
+
+    /**
+     * 4. End room (Admin or Host)
+     * POST /api/stream/end
+     */
+    public function endLive(Request $request): JsonResponse
+    {
+        $roomId = $request->input('room_id');
+
+        // Forcefully terminates room and disconnects all participants
+        $res = Omnicast::forceEndRoom($roomId);
+
+        return response()->json($res);
+    }
+}
+```
+
+---
+
+### 2. Webhook Event Listener (Receiving Server Events)
+
+When participants join/leave or rooms start/end, OmniCast POSTs event webhooks to your Laravel app with an HMAC-SHA256 signature.
+
+Register the route in `routes/api.php`:
+
+```php
+use App\Http\Controllers\OmnicastWebhookController;
+
+Route::post('/omnicast/webhook', [OmnicastWebhookController::class, 'handle']);
+```
+
+Create `app/Http/Controllers/OmnicastWebhookController.php`:
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Omnicast\LaravelSdk\Facades\Omnicast;
+use Omnicast\LaravelSdk\Constants\WebhookType;
+use Omnicast\LaravelSdk\Exceptions\OmnicastException;
+
+class OmnicastWebhookController extends Controller
+{
+    public function handle(Request $request): JsonResponse
+    {
+        $payload   = $request->getContent();
+        $signature = (string) $request->header('X-Signature');
+
+        try {
+            // Verifies X-Signature header and decodes into WebhookEvent DTO
+            $event = Omnicast::handleWebhook($payload, $signature);
+
+            match ($event->eventType) {
+                WebhookType::ROOM_STARTED => $this->onRoomStarted($event->roomId, $event->userId),
+                WebhookType::ROOM_ENDED   => $this->onRoomEnded($event->roomId),
+                WebhookType::PARTICIPANT_JOINED => $this->onUserJoined($event->roomId, $event->userId),
+                WebhookType::PARTICIPANT_LEFT   => $this->onUserLeft($event->roomId, $event->userId),
+                WebhookType::GIFT_SENT    => $this->onGiftSent($event->data),
+                default => null,
+            };
+
+            return response()->json(['status' => 'acknowledged']);
+        } catch (OmnicastException $e) {
+            // Returns 403 if signature is invalid or tampered
+            return response()->json(['error' => $e->getMessage()], 403);
+        }
+    }
+
+    private function onRoomStarted(string $roomId, string $hostId): void
+    {
+        // Update database: Stream status = 'live'
+    }
+
+    private function onRoomEnded(string $roomId): void
+    {
+        // Update database: Stream status = 'ended'
+    }
+
+    private function onUserJoined(string $roomId, string $userId): void
+    {
+        // Increment viewer counter in cache/database
+    }
+
+    private function onUserLeft(string $roomId, string $userId): void
+    {
+        // Decrement viewer counter
+    }
+
+    private function onGiftSent(array $data): void
+    {
+        // Log transaction history
+    }
+}
+```
+
+---
+
+### 3. Frontend Client Integration (WebSockets + WebRTC)
+
+Frontend connects to the media server using the data returned by your Laravel API:
+
+```javascript
+// 1. Fetch token and ws_url from Laravel backend
+const res = await fetch('/api/stream/start', { method: 'POST' });
+const { room_id, token, ice_servers, ws_url } = await res.json();
+
+// 2. Open WebSocket connection
+const ws = new WebSocket(ws_url);
+
+ws.onopen = async () => {
+    console.log('Connected to OmniCast signaling server!');
+
+    // 3. Create WebRTC PeerConnection with ICE servers
+    const pc = new RTCPeerConnection({ iceServers: ice_servers });
+
+    // Add local mic/cam stream
+    const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+    // Create SDP Offer
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    // Send create_room action with SDP offer to OmniCast
+    ws.send(JSON.stringify({
+        action: 'create_room',
+        room_id: room_id,
+        user_id: 'user_101',
+        payload: {
+            sdp: offer.sdp,
+            type: 'offer'
+        }
+    }));
+};
+
+ws.onmessage = async (event) => {
+    const msg = JSON.parse(event.data);
+
+    // Handle SDP Answer from media server
+    if (msg.event === 'answer') {
+        await pc.setRemoteDescription(new RTCSessionDescription({
+            type: 'answer',
+            sdp: msg.payload.sdp
+        }));
+    }
+
+    // Real-time gift animation broadcast
+    if (msg.event === 'gift') {
+        console.log(`Received gift ${msg.data.gift} from ${msg.data.sender_name}!`);
+    }
+};
+```
+
+---
+
+## Complete API Reference
+
+You can access all methods via the `Omnicast` facade or by injecting `OmnicastService`.
+
+### Authentication & Tokens
 
 ```php
 use Omnicast\LaravelSdk\Facades\Omnicast;
 use Omnicast\LaravelSdk\Constants\Role;
 
-$response = Omnicast::generateToken(
+// 1. Primary endpoint: POST /api/auth/token
+$data = Omnicast::generateToken(
     userId: 'user_101',
     userName: 'Meharab Islam',
     avatarUrl: 'https://cdn.example.com/avatar.jpg',
     role: Role::VIEWER, // 'host', 'cohost', 'publisher', 'viewer', 'user'
-    roomId: 'room_live_abc123',
+    roomId: 'room_123',
     canPublish: false,
-    canSubscribe: true,
+    canSubscribe: true
 );
 
-// Returns:
-// [
-//   'status' => 'success',
-//   'token' => 'eyJhbGciOi...',
-//   'user_id' => 'user_101',
-//   'expires_in' => 86400,
-//   'ice_servers' => [ ... ]
-// ]
+// 2. LiveKit compatible token: POST /api/livekit/token
+$data = Omnicast::generateLivekitToken('user_101', 'Meharab', role: Role::HOST);
+
+// 3. Development demo token: GET /auth/demo-token
+$data = Omnicast::getDemoToken('test_user', Role::HOST, 'room_123');
+
+// 4. Offline local JWT token generation (zero network latency)
+$hostToken = Omnicast::generateHostToken('room_123', 'host_101', ['vip' => true]);
+$joinToken = Omnicast::generateJoinToken('room_123', 'viewer_202', Role::VIEWER);
 ```
 
-### 2. Room Management
+### Room Management
 
 ```php
-// Create a new room (host calls this before WebSocket connection)
+// Create a live room
 $room = Omnicast::createRoom(
     roomId: 'room_live_abc123',
     hostId: 'user_101',
     roomName: "Meharab's Live Show",
-    roomType: 'live',
+    roomType: 'live' // 'live', 'pk', 'event'
 );
 
-// List all currently active rooms
-$rooms = Omnicast::listRooms();
+// List all active rooms
+$rooms = Omnicast::listRooms(); // or Omnicast::getRooms();
 
 // Get single room details
 $room = Omnicast::getRoom('room_live_abc123');
 
-// Calculate room uptime in seconds
-$uptimeSeconds = Omnicast::getRoomUptime($room['created_at']);
+// Get total count of active rooms
+$count = Omnicast::getRoomCount();
+
+// Get viewers / participant list
+$participants = Omnicast::getParticipants('room_live_abc123');
+
+// Get participant count
+$viewerCount = Omnicast::getParticipantCount('room_live_abc123');
+
+// Calculate uptime in seconds from created_at
+$seconds = Omnicast::getRoomUptime($room['created_at']);
 ```
 
-### 3. STUN / TURN ICE Servers
+### STUN / TURN ICE Servers
 
 ```php
-// Query ICE servers from media server
-$iceServers = Omnicast::getIceServers('user_101');
+// Fetch ICE server config from media server
+$ice = Omnicast::getIceServers(userId: 'user_101');
 
-// Or generate RFC 5766 TURN credentials locally (zero network overhead):
-$turnCreds = Omnicast::generateTurnCredentials('user_101', ttl: 86400);
+// Fetch TURN server credentials from media server
+$turn = Omnicast::getTurnCredentials(userId: 'user_101');
+
+// Generate RFC 5766 TURN REST API credentials locally (zero network overhead)
+$creds = Omnicast::generateTurnCredentials(userId: 'user_101', ttl: 86400);
 // Returns: ['uris' => [...], 'username' => '...', 'password' => '...', 'ttl' => 86400]
 ```
 
-### 4. Admin Management
+### Admin Operations
+
+Admin endpoints authenticate using `X-API-Key`.
 
 ```php
-// Admin overview with uptime_seconds and total active counts
+// Overview of all active rooms with uptime_seconds and statistics
 $overview = Omnicast::adminListRooms();
 
-// Forcefully terminate and close an active room
-$result = Omnicast::forceEndRoom('room_live_abc123');
+// Forcefully terminate and destroy an active room
+$result = Omnicast::forceEndRoom('room_live_abc123'); // or Omnicast::closeRoom(...)
 ```
 
-### 5. In-App Virtual Gifts
-
-Inject gifts purchased via your in-app currency into the live stream:
+### Gift / Engagement API
 
 ```php
 Omnicast::sendGift(
@@ -154,125 +516,86 @@ Omnicast::sendGift(
     senderName: 'Ahmed',
     giftId: 'gift_rose_001',
     giftName: 'Rose',
-    receiverId: 'user_101', // target host
+    receiverId: 'user_101', // target host ID
     coins: 50,
     points: 50,
-    amount: 1,
+    amount: 1
 );
 ```
 
-### 6. Health & Server Status
+### Health & Maintenance
 
 ```php
-if (Omnicast::isDraining()) {
-    // Server is draining connections for maintenance, avoid scheduling new streams
+// Raw health response: GET /health
+$health = Omnicast::healthCheck();
+
+// Check if server is operational
+if (Omnicast::isHealthy()) {
+    // Normal operation
 }
 
-$health = Omnicast::healthCheck();
+// Check if server is draining connections for maintenance/restart
+if (Omnicast::isDraining()) {
+    // Don't schedule new streams on this node
+}
 ```
 
-### 7. WebSocket Signaling Protocol
-
-Generate connection URLs and format messaging envelopes:
+### WebSocket Signaling Helpers
 
 ```php
 use Omnicast\LaravelSdk\Constants\WsAction;
+use Omnicast\LaravelSdk\Constants\WsEvent;
 
-// Generate WS / WSS connection URL
+// Get WebSocket connection URL with token
 $wsUrl = Omnicast::getWebSocketUrl($token);
-// => ws://127.0.0.1:8080/ws?token=eyJhbGciOi...
+// => ws://127.0.0.1:8080/ws?token=eyJhbGci...
 
-// Format client message envelope
+// Build standard message envelope
 $message = Omnicast::formatWebSocketMessage(
     action: WsAction::CHAT,
-    roomId: 'room_live_abc123',
+    roomId: 'room_123',
     userId: 'user_101',
-    payload: ['message' => 'Hello everyone!'],
-    extra: ['user_name' => 'Meharab Islam'],
+    payload: ['message' => 'Hello World!'],
+    extra: ['user_name' => 'Meharab']
 );
 ```
 
-### 8. Webhook Verification & Handling
-
-Configure a webhook route in `routes/api.php`:
+### Webhooks & Signature Verification
 
 ```php
-use Illuminate\Http\Request;
-use Omnicast\LaravelSdk\Facades\Omnicast;
-use Omnicast\LaravelSdk\Constants\WebhookType;
+// Verify signature manually:
+$isValid = Omnicast::verifyWebhookSignature($rawPayload, $signature);
 
-Route::post('/omnicast/webhook', function (Request $request) {
-    $payload = $request->getContent();
-    $signature = (string) $request->header('X-Signature');
+// Verify signature and return typed WebhookEvent DTO:
+$event = Omnicast::handleWebhook($rawPayload, $signature);
 
-    // Validates HMAC-SHA256 signature and returns WebhookEvent DTO
-    $event = Omnicast::handleWebhook($payload, $signature);
-
-    match ($event->eventType) {
-        WebhookType::ROOM_STARTED => logger("Room started: {$event->roomId}"),
-        WebhookType::ROOM_ENDED   => logger("Room ended: {$event->roomId}"),
-        WebhookType::PARTICIPANT_JOINED => logger("User {$event->userId} joined {$event->roomId}"),
-        WebhookType::PARTICIPANT_LEFT   => logger("User {$event->userId} left {$event->roomId}"),
-        WebhookType::GIFT_SENT    => logger("Gift sent in {$event->roomId}"),
-        default => null,
-    };
-
-    return response()->json(['success' => true]);
-});
+$type = $event->eventType; // e.g. RoomStarted, RoomEnded, ParticipantJoined, GiftSent
+$room = $event->roomId;
+$user = $event->userId;
+$val  = $event->get('host_id');
 ```
 
 ---
 
-## Available Methods Reference
+## Exception & Error Handling
 
-| Method | Description |
-|---|---|
-| `generateToken(...)` | `POST /api/auth/token` — Main token generation with ICE credentials |
-| `generateLivekitToken(...)` | `POST /api/livekit/token` — LiveKit-compatible token generation |
-| `getDemoToken(...)` | `GET /auth/demo-token` — Quick development test token |
-| `generateHostToken(...)` | Offline local host JWT generation |
-| `generateJoinToken(...)` | Offline local viewer/co-host JWT generation |
-| `generateLocalToken(...)` | Offline local token generation with custom permissions |
-| `createRoom(...)` | `POST /api/rooms` — Create room before stream starts |
-| `listRooms()` / `getRooms()` | `GET /api/rooms` — List active rooms |
-| `getRoom(roomId)` | `GET /api/rooms/:id` — Single room details |
-| `getRoomCount()` | Total active rooms count |
-| `getIceServers(userId)` | `GET /api/ice-servers` — STUN / TURN server configurations |
-| `getTurnCredentials(userId)` | `GET /api/turn_credentials` — TURN URIs and credentials |
-| `generateTurnCredentials(...)`| Zero-latency RFC 5766 HMAC-SHA1 TURN credential generation |
-| `adminListRooms()` | `GET /api/admin/rooms` — Admin overview with uptime_seconds |
-| `forceEndRoom(roomId)` | `POST /api/admin/rooms/:id/end` — Terminate and close a live room |
-| `sendGift(...)` | `POST /api/gift` — Broadcast virtual gifts to live rooms |
-| `healthCheck()` | `GET /health` — Check media server status |
-| `isHealthy()` | Returns `true` if server is active and not draining |
-| `isDraining()` | Returns `true` if server is draining connections |
-| `getWebSocketUrl(token)` | Generates `ws://` / `wss://` signaling connection URL |
-| `formatWebSocketMessage(...)` | Prepares JSON message envelope for signaling |
-| `verifyWebhookSignature(...)` | Verifies `X-Signature` HMAC-SHA256 hash |
-| `handleWebhook(...)` | Validates signature and returns `WebhookEvent` DTO |
-| `getRoomUptime(createdAt)` | Calculates uptime seconds from `created_at` ISO string |
-
----
-
-## Exception Handling
-
-All API errors, network issues, and validation failures throw `OmnicastException`:
+All REST errors and connection failures throw `OmnicastException`:
 
 ```php
 use Omnicast\LaravelSdk\Facades\Omnicast;
 use Omnicast\LaravelSdk\Exceptions\OmnicastException;
 
 try {
-    Omnicast::createRoom('room_1', 'host_1');
+    Omnicast::createRoom('room_1', 'user_101');
 } catch (OmnicastException $e) {
     if ($e->isConflict()) {
         // Room already exists (409)
     } elseif ($e->isDraining()) {
-        // Server is draining connections (503)
+        // Server is in maintenance/draining mode (503)
     } elseif ($e->isNotFound()) {
-        // Resource not found (404)
+        // Room or endpoint not found (404)
     } elseif ($e->isUnauthorized()) {
-        // Invalid API Key / Secret (401)
+        // Invalid API Key or Secret (401)
     }
 
     $statusCode = $e->getHttpStatusCode();
@@ -282,23 +605,40 @@ try {
 
 ---
 
+## Postman Collection
+
+A complete Postman v2.1 collection is included in this repository at [`postman_collection.json`](postman_collection.json).
+
+It includes pre-configured requests with variables for:
+- Token Generation (`POST /api/auth/token`, `POST /api/livekit/token`, `GET /auth/demo-token`)
+- Room Management (`POST /api/rooms`, `GET /api/rooms`, `GET /api/rooms/:id`)
+- STUN / TURN ICE Servers (`GET /api/ice-servers`, `GET /api/turn_credentials`)
+- Admin Endpoints (`GET /api/admin/rooms`, `POST /api/admin/rooms/:id/end`)
+- Gift Broadcast (`POST /api/gift`)
+- Server Health Check (`GET /health`)
+- Webhook simulation
+
+Import `postman_collection.json` directly into Postman to begin testing.
+
+---
+
 ## Testing & Quality Assurance
 
+Run the automated test suite and static analysis tools:
+
 ```bash
-# Run unit tests
+# Run unit tests (31 tests, 93 assertions)
 ./vendor/bin/phpunit
 
-# Run static analysis (Level 8)
+# Run PHPStan static analysis (Level 8)
 ./vendor/bin/phpstan analyse
 
-# Check and fix code style
-./vendor/bin/pint
+# Check code formatting with Laravel Pint
+./vendor/bin/pint --test
 ```
-
-A Postman collection with all REST and Webhook requests is available in [`postman_collection.json`](postman_collection.json).
 
 ---
 
 ## License
 
-The MIT License (MIT). See [LICENSE](LICENSE) for details.
+The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
