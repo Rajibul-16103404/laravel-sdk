@@ -6,53 +6,65 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | OmniCast API Base URL
+    | OmniCast Media Server Base URL
     |--------------------------------------------------------------------------
     |
-    | The base URL of your OmniCast WebRTC media server REST API.
+    | The base URL of your OmniCast Go media server REST API (e.g., http://127.0.0.1:8080).
+    | Backwards-compatible with OMNICAST_API_URL if previously configured.
     |
     */
-    'api_url' => env('OMNICAST_API_URL', 'https://omnilive.lolipoplive.top/api'),
+    'base_url' => env('OMNICAST_BASE_URL', env('OMNICAST_API_URL', 'http://localhost:8080')),
 
     /*
     |--------------------------------------------------------------------------
-    | OmniCast API Key
+    | OmniCast API Key & Secret
     |--------------------------------------------------------------------------
     |
-    | Your OmniCast API key used for authenticating REST API requests.
-    | This is sent as the X-API-Key header on every request.
+    | Credentials used for authenticating REST API and Admin requests.
+    | Sent as X-API-KEY and X-API-SECRET headers.
     |
     */
-    'api_key' => env('OMNICAST_API_KEY'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | OmniCast API Secret
-    |--------------------------------------------------------------------------
-    |
-    | Your OmniCast API secret used alongside the API key for authentication.
-    | This is sent as the X-API-Secret header on every request.
-    |
-    */
-    'api_secret' => env('OMNICAST_API_SECRET'),
+    'api_key' => env('OMNICAST_API_KEY', 'dev_api_key_123'),
+    'api_secret' => env('OMNICAST_API_SECRET', 'dev_api_secret_456'),
 
     /*
     |--------------------------------------------------------------------------
     | OmniCast JWT Secret
     |--------------------------------------------------------------------------
     |
-    | The secret key used to sign JWT tokens for room access (host/join tokens).
-    | Keep this value strictly confidential.
+    | Shared secret key used to sign and verify user access JWT tokens.
     |
     */
-    'jwt_secret' => env('OMNICAST_JWT_SECRET'),
+    'jwt_secret' => env('OMNICAST_JWT_SECRET', 'live_media_server_jwt_secret_key_2026'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | STUN / TURN Shared Secret & Config
+    |--------------------------------------------------------------------------
+    |
+    | Shared HMAC-SHA1 secret for generating RFC 5766 REST API TURN credentials.
+    |
+    */
+    'turn_secret' => env('OMNICAST_TURN_SECRET', 'my_super_secure_turn_secret_999'),
+    'turn_realm' => env('OMNICAST_TURN_REALM', 'omnicast.live'),
+    'turn_port' => (int) env('OMNICAST_TURN_PORT', 3478),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Webhook Verification Secret
+    |--------------------------------------------------------------------------
+    |
+    | Secret key used to verify incoming HMAC-SHA256 signatures in X-Signature.
+    |
+    */
+    'webhook_secret' => env('OMNICAST_WEBHOOK_SECRET', env('WEBHOOK_SECRET', '')),
 
     /*
     |--------------------------------------------------------------------------
     | HTTP Request Timeout (seconds)
     |--------------------------------------------------------------------------
     |
-    | The number of seconds to wait for an API response before timing out.
+    | Maximum seconds to wait for an API response before timing out.
     |
     */
     'timeout' => (int) env('OMNICAST_TIMEOUT', 30),
@@ -62,7 +74,7 @@ return [
     | JWT Token TTL (seconds)
     |--------------------------------------------------------------------------
     |
-    | How long issued JWT tokens remain valid. Defaults to 24 hours.
+    | Validity duration for issued JWT tokens. Defaults to 24 hours (86400s).
     |
     */
     'jwt_ttl' => (int) env('OMNICAST_JWT_TTL', 86400),

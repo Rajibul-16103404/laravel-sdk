@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Omnicast\LaravelSdk;
 
 use Illuminate\Support\ServiceProvider;
-use Omnicast\LaravelSdk\Exceptions\OmnicastException;
 
 /**
  * OmnicastServiceProvider
@@ -25,7 +24,7 @@ class OmnicastServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes(
                 [
-                    __DIR__ . '/../config/omnicast.php' => config_path('omnicast.php'),
+                    __DIR__.'/../config/omnicast.php' => config_path('omnicast.php'),
                 ],
                 'omnicast-config',
             );
@@ -41,7 +40,7 @@ class OmnicastServiceProvider extends ServiceProvider
     {
         // Merge package defaults with any published config so keys are always present.
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/omnicast.php',
+            __DIR__.'/../config/omnicast.php',
             'omnicast',
         );
 
@@ -60,7 +59,7 @@ class OmnicastServiceProvider extends ServiceProvider
     /**
      * Declare which services are provided by this provider.
      *
-     * @return array<class-string>
+     * @return array<int, string>
      */
     public function provides(): array
     {

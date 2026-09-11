@@ -1,0 +1,358 @@
+{
+  "info": {
+    "name": "OmniCast Media Server API",
+    "_postman_id": "omnicast-media-server-v1",
+    "description": "Postman Collection for OmniCast Go live streaming media server HTTP REST API and Webhook endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8080",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "dev_api_key_123",
+      "type": "string"
+    },
+    {
+      "key": "apiSecret",
+      "value": "dev_api_secret_456",
+      "type": "string"
+    },
+    {
+      "key": "roomId",
+      "value": "room_live_abc123",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "user_101",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Generate User Token & ICE Servers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_key\": \"{{apiKey}}\",\n  \"api_secret\": \"{{apiSecret}}\",\n  \"user_id\": \"{{userId}}\",\n  \"user_name\": \"Meharab Islam\",\n  \"avatar_url\": \"https://cdn.example.com/avatars/user_101.jpg\",\n  \"role\": \"viewer\",\n  \"room_id\": \"{{roomId}}\",\n  \"can_publish\": false,\n  \"can_subscribe\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "token"]
+            },
+            "description": "Generates a signed JWT token and ICE server credentials for a user."
+          }
+        },
+        {
+          "name": "Generate LiveKit-compatible Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_key\": \"{{apiKey}}\",\n  \"api_secret\": \"{{apiSecret}}\",\n  \"user_id\": \"{{userId}}\",\n  \"user_name\": \"Meharab Islam\",\n  \"role\": \"host\",\n  \"room_id\": \"{{roomId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/livekit/token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "livekit", "token"]
+            },
+            "description": "Generates token for LiveKit-compatible integrations."
+          }
+        },
+        {
+          "name": "Demo Token (Development Only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/demo-token?user_id={{userId}}&role=host&room_id={{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "demo-token"],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "{{userId}}"
+                },
+                {
+                  "key": "role",
+                  "value": "host"
+                },
+                {
+                  "key": "room_id",
+                  "value": "{{roomId}}"
+                }
+              ]
+            },
+            "description": "Quickly generates a test token without API key/secret validation (Dev only)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Room Management",
+      "item": [
+        {
+          "name": "Create Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}"
+              },
+              {
+                "key": "X-API-SECRET",
+                "value": "{{apiSecret}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": \"{{roomId}}\",\n  \"host_id\": \"{{userId}}\",\n  \"room_name\": \"Meharab's Live Show\",\n  \"room_type\": \"live\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            },
+            "description": "Creates a new live room before host connects."
+          }
+        },
+        {
+          "name": "List Active Rooms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}"
+              },
+              {
+                "key": "X-API-SECRET",
+                "value": "{{apiSecret}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            },
+            "description": "Lists all currently active rooms on the server."
+          }
+        },
+        {
+          "name": "Get Single Room Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}"
+              },
+              {
+                "key": "X-API-SECRET",
+                "value": "{{apiSecret}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms/{{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms", "{{roomId}}"]
+            },
+            "description": "Returns details of a single active room."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. STUN / TURN ICE Servers",
+      "item": [
+        {
+          "name": "Get ICE Servers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ice-servers?user_id={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ice-servers"],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "description": "Returns WebRTC ICE servers configuration with time-limited HMAC-SHA1 credentials."
+          }
+        },
+        {
+          "name": "Get TURN Credentials",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/turn_credentials?user_id={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "turn_credentials"],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "description": "Returns TURN URIs, username, password and TTL."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Admin Endpoints",
+      "item": [
+        {
+          "name": "Admin Overview of Rooms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "rooms"]
+            },
+            "description": "Returns full admin overview with uptime_seconds and total active counts."
+          }
+        },
+        {
+          "name": "Force End Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/rooms/{{roomId}}/end",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "rooms", "{{roomId}}", "end"]
+            },
+            "description": "Forcefully terminates and destroys an active room."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Gift / Engagement API",
+      "item": [
+        {
+          "name": "Send Virtual Gift",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": \"{{roomId}}\",\n  \"sender_id\": \"user_202\",\n  \"sender_name\": \"Ahmed\",\n  \"gift_id\": \"gift_rose_001\",\n  \"gift\": \"Rose\",\n  \"target_host_id\": \"{{userId}}\",\n  \"receiver_id\": \"{{userId}}\",\n  \"coins\": 50,\n  \"points\": 50,\n  \"amount\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/gift",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "gift"]
+            },
+            "description": "Sends a gift event into a live room via REST API."
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Health Check",
+      "item": [
+        {
+          "name": "Check Server Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Checks server health and draining status."
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Webhook Simulation",
+      "item": [
+        {
+          "name": "Simulate RoomStarted Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Webhook-Event",
+                "value": "RoomStarted"
+              },
+              {
+                "key": "X-Signature",
+                "value": "compute-hmac-sha256-here"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"RoomStarted\",\n  \"event\": \"RoomStarted\",\n  \"room_id\": \"{{roomId}}\",\n  \"user_id\": \"{{userId}}\",\n  \"timestamp\": 1762444800,\n  \"data\": {\n    \"host_id\": \"{{userId}}\",\n    \"created_at\": \"2026-09-07T18:35:39Z\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/omnicast/webhook",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "omnicast", "webhook"]
+            },
+            "description": "Simulates an incoming RoomStarted webhook event to your Laravel application."
+          }
+        }
+      ]
+    }
+  ]
+}

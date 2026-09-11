@@ -12,18 +12,18 @@
         </testsuite>
     </testsuites>
 
-    <coverage>
+    <source>
         <include>
             <directory suffix=".php">src</directory>
         </include>
-    </coverage>
+    </source>
 
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_KEY" value="base64:abc123abc123abc123abc123abc123abc123abc123="/>
-        <env name="OMNICAST_API_URL" value="https://omnilive.lolipoplive.top/api"/>
-        <env name="OMNICAST_API_KEY" value="test-key"/>
-        <env name="OMNICAST_API_SECRET" value="test-secret"/>
-        <env name="OMNICAST_JWT_SECRET" value="test-jwt-secret-32-chars-minimum!"/>
+        <env name="OMNICAST_BASE_URL" value="http://127.0.0.1:8080"/>
+        <env name="OMNICAST_API_KEY" value="dev_api_key_123"/>
+        <env name="OMNICAST_API_SECRET" value="dev_api_secret_456"/>
+        <env name="OMNICAST_JWT_SECRET" value="live_media_server_jwt_secret_key_2026"/>
     </php>
 </phpunit>

@@ -1,0 +1,306 @@
+{
+  "communities": {
+    "0": [
+      "illuminate_http_client_response",
+      "src_omnicastservice_omnicastservice",
+      "src_omnicastservice_omnicastservice_adminlistrooms",
+      "src_omnicastservice_omnicastservice_closeroom",
+      "src_omnicastservice_omnicastservice_construct",
+      "src_omnicastservice_omnicastservice_createroom",
+      "src_omnicastservice_omnicastservice_forceendroom",
+      "src_omnicastservice_omnicastservice_formatwebsocketmessage",
+      "src_omnicastservice_omnicastservice_generatehosttoken",
+      "src_omnicastservice_omnicastservice_generatejointoken",
+      "src_omnicastservice_omnicastservice_generatelivekittoken",
+      "src_omnicastservice_omnicastservice_generatelocaltoken",
+      "src_omnicastservice_omnicastservice_generatetoken",
+      "src_omnicastservice_omnicastservice_generateturncredentials",
+      "src_omnicastservice_omnicastservice_getconfig",
+      "src_omnicastservice_omnicastservice_getdemotoken",
+      "src_omnicastservice_omnicastservice_geticeservers",
+      "src_omnicastservice_omnicastservice_getparticipantcount",
+      "src_omnicastservice_omnicastservice_getparticipants",
+      "src_omnicastservice_omnicastservice_getroom",
+      "src_omnicastservice_omnicastservice_getroomcount",
+      "src_omnicastservice_omnicastservice_getrooms",
+      "src_omnicastservice_omnicastservice_getroomuptime",
+      "src_omnicastservice_omnicastservice_getturncredentials",
+      "src_omnicastservice_omnicastservice_getwebsocketurl",
+      "src_omnicastservice_omnicastservice_healthcheck",
+      "src_omnicastservice_omnicastservice_isdraining",
+      "src_omnicastservice_omnicastservice_ishealthy",
+      "src_omnicastservice_omnicastservice_listrooms",
+      "src_omnicastservice_omnicastservice_parseresponse",
+      "src_omnicastservice_omnicastservice_resolveurl",
+      "src_omnicastservice_omnicastservice_sendadminrequest",
+      "src_omnicastservice_omnicastservice_sendgetrequest",
+      "src_omnicastservice_omnicastservice_sendgift",
+      "src_omnicastservice_omnicastservice_sendpostrequest",
+      "src_omnicastservice_omnicastservice_validateconfig"
+    ],
+    "1": [
+      "tests_omnicastservicetest_omnicastservicetest",
+      "tests_omnicastservicetest_omnicastservicetest_defineenvironment",
+      "tests_omnicastservicetest_omnicastservicetest_getpackageproviders",
+      "tests_omnicastservicetest_omnicastservicetest_test_admin_force_ends_room",
+      "tests_omnicastservicetest_omnicastservicetest_test_admin_lists_rooms",
+      "tests_omnicastservicetest_omnicastservicetest_test_calculates_room_uptime",
+      "tests_omnicastservicetest_omnicastservicetest_test_create_room_conflict_throws_409",
+      "tests_omnicastservicetest_omnicastservicetest_test_creates_room_successfully",
+      "tests_omnicastservicetest_omnicastservicetest_test_facade_resolves_instance",
+      "tests_omnicastservicetest_omnicastservicetest_test_falls_back_to_legacy_api_url_if_base_url_absent",
+      "tests_omnicastservicetest_omnicastservicetest_test_formats_websocket_message",
+      "tests_omnicastservicetest_omnicastservicetest_test_formats_websocket_url",
+      "tests_omnicastservicetest_omnicastservicetest_test_generates_livekit_token",
+      "tests_omnicastservicetest_omnicastservicetest_test_generates_token_via_rest_api",
+      "tests_omnicastservicetest_omnicastservicetest_test_generates_turn_credentials_offline_rfc5766",
+      "tests_omnicastservicetest_omnicastservicetest_test_generates_valid_host_token_offline",
+      "tests_omnicastservicetest_omnicastservicetest_test_generates_valid_viewer_and_cohost_tokens_offline",
+      "tests_omnicastservicetest_omnicastservicetest_test_get_room_not_found_throws_404",
+      "tests_omnicastservicetest_omnicastservicetest_test_gets_demo_token",
+      "tests_omnicastservicetest_omnicastservicetest_test_gets_ice_servers",
+      "tests_omnicastservicetest_omnicastservicetest_test_gets_single_room",
+      "tests_omnicastservicetest_omnicastservicetest_test_gets_turn_credentials",
+      "tests_omnicastservicetest_omnicastservicetest_test_handle_webhook_throws_on_tampered_payload",
+      "tests_omnicastservicetest_omnicastservicetest_test_health_check_draining",
+      "tests_omnicastservicetest_omnicastservicetest_test_health_check_healthy",
+      "tests_omnicastservicetest_omnicastservicetest_test_lists_rooms",
+      "tests_omnicastservicetest_omnicastservicetest_test_participant_count_falls_back_to_room_info",
+      "tests_omnicastservicetest_omnicastservicetest_test_sends_gift",
+      "tests_omnicastservicetest_omnicastservicetest_test_server_draining_throws_503",
+      "tests_omnicastservicetest_omnicastservicetest_test_throws_on_invalid_join_role",
+      "tests_omnicastservicetest_omnicastservicetest_test_throws_when_api_key_is_missing",
+      "tests_omnicastservicetest_omnicastservicetest_test_throws_when_base_url_is_missing",
+      "tests_omnicastservicetest_omnicastservicetest_test_throws_when_jwt_secret_is_missing",
+      "tests_omnicastservicetest_omnicastservicetest_test_verifies_webhook_signature_and_handles_event"
+    ],
+    "2": [
+      "runtimeexception",
+      "src_exceptions_omnicastexception",
+      "src_exceptions_omnicastexception_omnicastexception",
+      "src_exceptions_omnicastexception_omnicastexception_conflict",
+      "src_exceptions_omnicastexception_omnicastexception_connectionerror",
+      "src_exceptions_omnicastexception_omnicastexception_construct",
+      "src_exceptions_omnicastexception_omnicastexception_forbidden",
+      "src_exceptions_omnicastexception_omnicastexception_fromresponse",
+      "src_exceptions_omnicastexception_omnicastexception_gethttpstatuscode",
+      "src_exceptions_omnicastexception_omnicastexception_getresponsebody",
+      "src_exceptions_omnicastexception_omnicastexception_invalidwebhooksignature",
+      "src_exceptions_omnicastexception_omnicastexception_isconflict",
+      "src_exceptions_omnicastexception_omnicastexception_isdraining",
+      "src_exceptions_omnicastexception_omnicastexception_isnotfound",
+      "src_exceptions_omnicastexception_omnicastexception_isunauthorized",
+      "src_exceptions_omnicastexception_omnicastexception_jwterror",
+      "src_exceptions_omnicastexception_omnicastexception_missingconfiguration",
+      "src_exceptions_omnicastexception_omnicastexception_notfound",
+      "src_exceptions_omnicastexception_omnicastexception_requestfailed",
+      "src_exceptions_omnicastexception_omnicastexception_serverdraining",
+      "src_exceptions_omnicastexception_omnicastexception_timeout",
+      "src_exceptions_omnicastexception_omnicastexception_unauthorized",
+      "src_exceptions_omnicastexception_php_self",
+      "throwable"
+    ],
+    "3": [
+      "illuminate_http_client_pendingrequest",
+      "illuminate_support_facades_facade",
+      "orchestra_testbench_testcase",
+      "src_constants_role",
+      "src_constants_role_role",
+      "src_constants_role_role_all",
+      "src_constants_wsaction",
+      "src_constants_wsaction_wsaction",
+      "src_dtos_webhookevent",
+      "src_dtos_webhookevent_php_self",
+      "src_dtos_webhookevent_webhookevent",
+      "src_dtos_webhookevent_webhookevent_construct",
+      "src_dtos_webhookevent_webhookevent_fromarray",
+      "src_dtos_webhookevent_webhookevent_get",
+      "src_dtos_webhookevent_webhookevent_toarray",
+      "src_facades_omnicast",
+      "src_facades_omnicast_omnicast",
+      "src_facades_omnicast_omnicast_getfacadeaccessor",
+      "src_omnicastservice",
+      "src_omnicastservice_omnicastservice_handlewebhook",
+      "src_omnicastservice_omnicastservice_httpclient",
+      "src_omnicastservice_omnicastservice_verifywebhooksignature",
+      "tests_omnicastservicetest"
+    ],
+    "4": [
+      "composer",
+      "composer_authors",
+      "composer_autoload",
+      "composer_autoload_dev",
+      "composer_autoload_dev_psr_4",
+      "composer_autoload_psr_4",
+      "composer_config",
+      "composer_config_optimize_autoloader",
+      "composer_config_sort_packages",
+      "composer_description",
+      "composer_license",
+      "composer_minimum_stability",
+      "composer_name",
+      "composer_prefer_stable",
+      "composer_psr_4_omnicast_laravelsdk",
+      "composer_psr_4_omnicast_laravelsdk_tests",
+      "composer_require",
+      "composer_require_firebase_php_jwt",
+      "composer_require_illuminate_http",
+      "composer_require_illuminate_support",
+      "composer_require_php",
+      "composer_type"
+    ],
+    "5": [
+      "package",
+      "package_author",
+      "package_description",
+      "package_json_ref_laravel",
+      "package_json_ref_omnicast",
+      "package_json_ref_webrtc",
+      "package_keywords",
+      "package_license",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_version"
+    ],
+    "6": [
+      "composer_json_ref_laravel",
+      "composer_json_ref_omnicast",
+      "composer_json_ref_webrtc",
+      "composer_keywords",
+      "ref_jwt",
+      "ref_media_server",
+      "ref_sdk",
+      "ref_streaming"
+    ],
+    "7": [
+      "composer_aliases_omnicast",
+      "composer_extra",
+      "composer_extra_laravel",
+      "composer_laravel_aliases",
+      "composer_laravel_providers",
+      "ref_omnicast_laravelsdk_omnicastserviceprovider"
+    ],
+    "8": [
+      "composer_require_dev",
+      "composer_require_dev_laravel_pint",
+      "composer_require_dev_mockery_mockery",
+      "composer_require_dev_orchestra_testbench",
+      "composer_require_dev_phpstan_phpstan",
+      "composer_require_dev_phpunit_phpunit"
+    ],
+    "9": [
+      "illuminate_support_serviceprovider",
+      "src_omnicastserviceprovider",
+      "src_omnicastserviceprovider_omnicastserviceprovider",
+      "src_omnicastserviceprovider_omnicastserviceprovider_boot",
+      "src_omnicastserviceprovider_omnicastserviceprovider_provides",
+      "src_omnicastserviceprovider_omnicastserviceprovider_register"
+    ],
+    "10": [
+      "src_constants_webhooktype",
+      "src_constants_webhooktype_webhooktype",
+      "src_constants_webhooktype_webhooktype_all"
+    ],
+    "11": [
+      "src_constants_wsevent",
+      "src_constants_wsevent_wsevent"
+    ],
+    "12": [
+      "config_omnicast"
+    ],
+    "13": [
+      "pendingrequest"
+    ],
+    "14": [
+      "static"
+    ]
+  },
+  "cohesion": {
+    "0": 0.10317460317460317,
+    "1": 0.058823529411764705,
+    "2": 0.14130434782608695,
+    "3": 0.10276679841897234,
+    "4": 0.09090909090909091,
+    "5": 0.15384615384615385,
+    "6": 0.25,
+    "7": 0.3333333333333333,
+    "8": 0.3333333333333333,
+    "9": 0.4,
+    "10": 0.6666666666666666,
+    "11": 1.0,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0
+  },
+  "gods": [
+    {
+      "id": "src_omnicastservice_omnicastservice",
+      "label": "OmnicastService",
+      "degree": 38
+    },
+    {
+      "id": "tests_omnicastservicetest_omnicastservicetest",
+      "label": "OmnicastServiceTest",
+      "degree": 35
+    },
+    {
+      "id": "src_exceptions_omnicastexception_omnicastexception",
+      "label": "OmnicastException",
+      "degree": 29
+    },
+    {
+      "id": "src_dtos_webhookevent_webhookevent",
+      "label": "WebhookEvent",
+      "degree": 9
+    },
+    {
+      "id": "composer_keywords",
+      "label": "keywords",
+      "degree": 8
+    },
+    {
+      "id": "composer_require_dev",
+      "label": "require-dev",
+      "degree": 6
+    },
+    {
+      "id": "composer_require",
+      "label": "require",
+      "degree": 5
+    },
+    {
+      "id": "src_omnicastserviceprovider_omnicastserviceprovider",
+      "label": "OmnicastServiceProvider",
+      "degree": 5
+    },
+    {
+      "id": "package_keywords",
+      "label": "keywords",
+      "degree": 4
+    },
+    {
+      "id": "composer_extra_laravel",
+      "label": "laravel",
+      "degree": 3
+    }
+  ],
+  "surprises": [
+    {
+      "source": "OmnicastServiceTest",
+      "target": "Orchestra\\Testbench\\TestCase",
+      "source_files": [
+        "tests/OmnicastServiceTest.php",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "inherits",
+      "note": "Bridges community 3 \u2192 community 1"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}
