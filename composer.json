@@ -1,28 +1,45 @@
 {
-    "name": "omnicast/laravel-sdk",
-    "description": "A production-ready Laravel SDK for interacting with the OmniCast WebRTC media server.",
+    "name": "rajibul-16103404/omnicast-laravel-sdk",
+    "description": "A production-ready Laravel SDK for interacting with the OmniCast WebRTC live streaming media server.",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://github.com/Rajibul-16103404/laravel-sdk",
     "keywords": [
         "laravel",
         "webrtc",
         "omnicast",
+        "live-streaming",
         "media-server",
-        "sdk",
+        "streaming",
+        "realtime",
+        "sfu",
         "jwt",
-        "streaming"
+        "turn",
+        "stun",
+        "webhooks",
+        "sdk"
     ],
     "authors": [
         {
+            "name": "Rajibul Islam",
+            "role": "Developer"
+        },
+        {
             "name": "OmniCast",
-            "email": "dev@omnicast.io"
+            "email": "dev@omnicast.io",
+            "homepage": "https://omnicast.live",
+            "role": "Maintainer"
         }
     ],
+    "support": {
+        "issues": "https://github.com/Rajibul-16103404/laravel-sdk/issues",
+        "source": "https://github.com/Rajibul-16103404/laravel-sdk"
+    },
     "require": {
         "php": "^8.1",
-        "illuminate/support": "^10.0|^11.0|^12.0",
+        "firebase/php-jwt": "^7.0",
         "illuminate/http": "^10.0|^11.0|^12.0",
-        "firebase/php-jwt": "^7.0"
+        "illuminate/support": "^10.0|^11.0|^12.0"
     },
     "require-dev": {
         "laravel/pint": "^1.32",
@@ -54,7 +71,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "sort-packages": true
     }
 }
